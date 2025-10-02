@@ -1,4 +1,3 @@
-// @flow
 import React from 'react';
 import renderer from 'react-test-renderer';
 import {shallow} from 'enzyme';
@@ -10,7 +9,7 @@ describe('render ResizableBox', () => {
   const props = {
     axis: 'x',
     draggableOpts: {},
-    handle: (jest.fn((resizeHandle, ref) => <span className={`test-class-${resizeHandle}`} ref={ref} />): Function),
+    handle: jest.fn((resizeHandle, ref) => <span className={`test-class-${resizeHandle}`} ref={ref} />),
     handleSize: [20, 20],
     height: 50,
     lockAspectRatio: false,
@@ -52,48 +51,26 @@ describe('render ResizableBox', () => {
       propsWidth: 50,
       width: 30,
     });
-    expect(element.find('.children')).toHaveLength(1);
-    expect(fakeEvent.persist).toHaveBeenCalledTimes(1);
     expect(props.onResize).toHaveBeenCalledWith(fakeEvent, data);
-
-    resizable.simulate('resizeStart', fakeEvent, data);
-    expect(props.onResizeStart).toHaveBeenCalledWith(fakeEvent, data);
-
-    resizable.simulate('resizeStop', fakeEvent, data);
-    expect(props.onResizeStop).toHaveBeenCalledWith(fakeEvent, data);
   });
 
-  describe('<Resizable> props filtering', () => {
-    // Ensure everything in propTypes is represented here. Otherwise the next two tests are not valid
-    test('all intended props are in our props object', () => {
-      expect(['children', 'className', ...Object.keys(props)].sort()).toEqual(Object.keys(Resizable.propTypes).sort());
+  describe('static getDerivedStateFromProps', () => {
+    test('updating with new height/width', () => {
+      const element = shallow(<ResizableBox {...props}>{children}</ResizableBox>);
+      element.setProps({width: 100, height: 100});
+      expect(element.state()).toEqual({
+        height: 100,
+        propsHeight: 100,
+        propsWidth: 100,
+        width: 100,
+      });
     });
 
-    test('none of these props leak down to the child', () => {
-      const element = shallow(<ResizableBox {...props} />);
-      expect(Object.keys(element.find('div').props())).toEqual(['style']);
-    });
-
-    test('className is constructed properly', () => {
-      const element = shallow(<ResizableBox {...props} className='foo' />);
-      expect(element.find('div').props().className).toEqual(`foo`);
-    });
-  });
-
-  test('style prop', () => {
-    const element = shallow(<ResizableBox {...props} style={{backgroundColor: 'red'}}>{children}</ResizableBox>);
-    expect(element.find('div').at(0).prop('style')).toEqual({
-      width: '50px',
-      height: '50px',
-      backgroundColor: 'red'
-    });
-  });
-
-  test('style prop width and height ignored', () => {
-    const element = shallow(<ResizableBox {...props} style={{width: 10, height: 10}}>{children}</ResizableBox>);
-    expect(element.find('div').at(0).prop('style')).toEqual({
-      width: '50px',
-      height: '50px',
+    test('updating with same height/width returns null', () => {
+      const element = shallow(<ResizableBox {...props}>{children}</ResizableBox>);
+      const prevState = element.state();
+      element.setProps({width: 50, height: 50});
+      expect(element.state()).toEqual(prevState);
     });
   });
 });

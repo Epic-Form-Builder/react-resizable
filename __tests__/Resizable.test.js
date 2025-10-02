@@ -1,4 +1,3 @@
-// @flow
 import React from 'react';
 import renderer from 'react-test-renderer';
 import {shallow, mount} from 'enzyme';
@@ -64,7 +63,7 @@ describe('render Resizable', () => {
 
     test('with handle component', () => {
       const ResizeHandle = React.forwardRef((props, ref) => {
-        // $FlowIgnore doens't know this is cloned and has handleAxis
+        // eslint-disable-next-line no-unused-vars
         const {handleAxis, ...restProps} = props;
         return (
           <div
@@ -140,7 +139,7 @@ describe('render Resizable', () => {
       top: 0,
     };
     const node = document.createElement('div');
-    // $FlowIgnore need to override to have control over dummy dom element
+    // eslint-disable-next-line no-undef
     node.getBoundingClientRect = () => ({ ...mockClientRect });
     const mockEvent = { };
     const element = shallow(<Resizable {...customProps}>{resizableBoxChildren}</Resizable>);

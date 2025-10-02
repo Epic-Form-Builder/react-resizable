@@ -151,7 +151,9 @@ export default class Resizable extends React.Component {
     const {handle} = this.props;
     // No handle provided, make the default
     if (!handle) {
-      return <span className={`react-resizable-handle react-resizable-handle-${handleAxis}`} ref={ref} />;
+      return (
+          <span className={`react-resizable-handle react-resizable-handle-${handleAxis}`} ref={ref} />
+      );
     }
     // Handle is a function, such as:
     // `handle={(handleAxis) => <span className={...} />}`
